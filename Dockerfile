@@ -1,5 +1,5 @@
 FROM maven:3.9.11-eclipse-temurin-17 AS build
-RUN apk apt install git 
+RUN apk add --no-cache git 
 WORKDIR /usr/share/demo
 RUN git clone https://github.com/srinuparella/spring-petclinic.git && \ cd spring-petclinic && \ mvn package
 
