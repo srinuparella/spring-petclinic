@@ -7,6 +7,6 @@ FROM openjdk-25-ea-17-jdk AS run
 RUN adduser -D -h /usr/share/demo -s /bin/bash srinu
 USER srinu
 WORKDIR /usr/share/demo 
-COPY --from=build /target/*.jar
+COPY --from=build /target/*.jar .
 EXPOSE 8080/tcp
 CMD ["java", "-jar" , "*.jar"]
