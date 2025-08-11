@@ -10,6 +10,6 @@ FROM eclipse-temurin:17-jre-alpine AS run
 RUN adduser -D -h /usr/share/demo -s /bin/bash srinu
 USER srinu
 WORKDIR /usr/share/demo 
-COPY --from=build /target/spring-petclinic.jar  .
+COPY --from=build /target/*  .
 EXPOSE 8080/tcp
-CMD ["java", "-jar" , "spring-petclinic.jar"]
+CMD ["java", "-jar" , "*.jar"]
