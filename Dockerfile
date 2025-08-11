@@ -1,0 +1,6 @@
+FROM 3.9.11-eclipse-temurin-17-alpine as build
+RUN git clone https://github.com/srinuparella/spring-petclinic.git && \ cd spring-petclinic && \ mvn package
+
+FROM openjdk-25-ea-17-jdk as run
+RUN adduser -D -h /usr/share/demo -s /bin/bash practice
+WORKDIR /usr/share/demo 
