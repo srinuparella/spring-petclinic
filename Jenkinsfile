@@ -1,10 +1,8 @@
 pipeline {
-    agent {
-        label 'JAVAAPP'
-    }
-    triggers {
-        pollSCM('* * * * *')
-    }
+    agent { label 'JAVAAPP' }
+
+    triggers { pollSCM('* * * * *') }
+
     stages {
         stage('Git Checkout') {
             steps {
@@ -42,9 +40,7 @@ pipeline {
                         ]
                     }'''
                 )
-                rtPublishBuildInfo(
-                    serverId: 'JFROG_ARTIFACTORY'
-                )
+                rtPublishBuildInfo(serverId: 'JFROG_ARTIFACTORY')
             }
         }
     }
@@ -52,7 +48,7 @@ pipeline {
     post {
         always {
             archiveArtifacts artifacts: '**/target/*.jar'
-            junit '*/target/surefire-reports/*.xml'
+            junit '**/target/surefire-reports/*.xml'
         }
         success {
             echo '✅ Pipeline is successful with SonarQube and JFrog integration!'
