@@ -2,7 +2,7 @@ pipeline {
     agent {
         label 'JAVAAPP'
     }
-
+    
     stages {
         stage('Git Checkout') {
             steps {
@@ -35,7 +35,7 @@ pipeline {
                         "files": [
                             {
                                 "pattern": "target/*.jar",
-                                "target": "jfrog_java-libs-release/"
+                                "target": "jfrog_java-libs-release-local/"
                             }
                         ]
                     }'''
