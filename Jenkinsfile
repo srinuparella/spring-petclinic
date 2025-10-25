@@ -52,11 +52,10 @@ pipeline {
          }
         stage ('docker install and image build'){
             steps {
-                sh '''
-                curl -fsSL https://get.docker.com -o install-docker.sh && \
-                sudo sh install-docker.sh && \
-                docker image build --build-arg user=parella -t java:1.1
-                '''
+                sh 
+                // curl -fsSL https://get.docker.com -o install-docker.sh && \
+                // sudo sh install-docker.sh && \
+                'docker image build --build-arg user=parella -t java:1.1'
             }
         }
     }   
