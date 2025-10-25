@@ -1,14 +1,18 @@
-FROM maven:3.9.11-eclipse-temurin-17 AS build
-# RUN  apk add install git in above already git is inbuilt installed
-RUN git clone https://github.com/srinuparella/spring-petclinic.git && \ 
-cd spring-petclinic && \
-mvn package
-## dont write RUN git clone https://github.com/srinuparella/spring-petclinic.git && \ cd spring-petclinic && \ mvn package
+FROM  maven:3.9.11-eclipse-temurin-17 AS build
+WORKDIR /project
+ADD .  /project
+RUN mvn package
 
-FROM eclipse-temurin:17-jre-alpine AS run
-RUN adduser -D -h /usr/share/demo -s /bin/sh srinu
-USER srinu
-WORKDIR /usr/share/demo 
-COPY --from=build /spring-petclinic/target/*.jar  app.jar
-EXPOSE 8080/tcp
-CMD ["java", "-jar" , "app.jar"]
+
+
+FROM eclipse-temurin:17-jdk-jammy AS  run
+ENV enviornment="UAT"
+LABEL author="DevOps Team"
+ARG user=srinu
+WORKDIR /app
+COPY --from=build  /project/target/spring-petclinic-3.5.0-SNAPSHOT.jar   /app.jar
+RUN useradd -m -s /bin/bash  ${user}
+USER ${user}
+EXPOSE 8080
+CMD ["java" , "-jar" , "app.jar"]   
+

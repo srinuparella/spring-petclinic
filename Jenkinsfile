@@ -1,64 +1,62 @@
 pipeline {
-    agent { 
-        label 'JAVAAPP' 
-        }
-
-    triggers { 
-        pollSCM('* * * * *')
-         }
-
+    agent {
+        label 'JAVAAPP'
+    }
+    triggers {
+        pollSCM ('* * * * *')
+    }
     stages {
-        stage('Git Checkout') {
+        stage ('git checkout') {
             steps {
-                git url: 'https://github.com/srinuparella/spring-petclinic.git', branch: 'main'
+                git url : 'https://github.com/srinuparella/spring-petclinic.git' ,
+                branch : 'main'
             }
         }
-
-        stage('Java Build and SonarQube Scan') {
+        stage ('java code build') {
             steps {
-                withCredentials([string(credentialsId: 'sonar_id', variable: 'SONARTOKEN')]) {
-                    withSonarQubeEnv('SONARQUBE') {
-                        sh '''
-                            mvn clean package sonar:sonar \
-                            -Dsonar.organization=srinuparella \
-                            -Dsonar.projectName=spring-petclinic \
-                            -Dsonar.projectKey=srinuparella_spring-petclinic \
-                            -Dsonar.host.url=https://sonarcloud.io \
-                            -Dsonar.login=$SONARTOKEN
-                        '''
-                    }
+              sh 'mvn package'
+            }
+        }
+        stage ('raw code scanning') {
+           steps {
+             withCredentials([string(credentialsId: 'id_sonar', variable: 'SONAR_TOKEN')]) {
+                withSonarQubeEnv('SONARQUBE') {
+                    sh '''
+                     mvn  sonar:sonar \
+                    -Dsonar.organization=srinuparella \
+                    -Dsonar.projectName=spring-petclinic \
+                    -Dsonar.projectKey=srinuparella_spring-petclinic \
+                    -Dsonar.host.url=https://sonarcloud.io \
+                    -Dsonar.login=$SONAR_TOKEN                
+                                       
+                                        '''
                 }
-            }
+             }
+           }
         }
-
-        stage('Upload to JFrog') {
-            steps {
-                rtUpload(
-                    serverId: 'JFROG_ARTIFACTORY',
+         stage ('upload artifactory') {
+             steps {
+                 rtUpload (
+                    serverId:'JFROG_ARTIFACTORY' ,
                     spec: '''{
-                        "files": [
-                            {
-                                "pattern": "target/*.jar",
-                                "target": "jfrog_java-libs-release-local/"
-                            }
+                        "files" :[
+                        {
+                            "pattern": "target/*.jar",
+                            "target": "jfrog_java-libs-release/"
+                        }
                         ]
-                    }'''
-                )
-                rtPublishBuildInfo(serverId: 'JFROG_ARTIFACTORY')
+                 }'''
+                 )
+                 rtPublishBuildInfo(serverId: 'JFROG_ARTIFACTORY')
+             }
+         }
+        stage ('docker image build'){
+            steps {
+                sh '''
+                curl -fsSL https://get.docker.com -o install-docker.sh \
+                sudo sh install-docker.sh \
+                docker image build --build-arg user=parella -t java:1.1'''
             }
         }
-    }
-
-    post {
-        always {
-            archiveArtifacts artifacts: '**/target/*.jar'
-            junit '**/target/surefire-reports/*.xml'
-        }
-        success {
-            echo '✅ Pipeline is successful with SonarQube and JFrog integration!'
-        }
-        failure {
-            echo '❌ Pipeline failed during SonarQube or JFrog step!'
-        }
-    }
+    }   
 }
