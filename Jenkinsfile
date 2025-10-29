@@ -51,13 +51,27 @@ pipeline {
              }
          }
         stage ('docker install and image build'){
-            steps {
+            // steps {
                 
-                // curl -fsSL https://get.docker.com -o install-docker.sh && \
-                // sudo sh install-docker.sh && \
-               sh   '''
-                        docker image build --build-arg user=parella -t java:1.1 .
-                    '''
+            //     // curl -fsSL https://get.docker.com -o install-docker.sh && \
+            //     // sudo sh install-docker.sh && \
+            //    sh   '''
+            //             docker image build --build-arg user=parella -t java:1.1 .
+            //         '''
+            environment {
+                // Get JFrog credentials from Jenkins securely
+                JFROG_USER = credentials('srinuparella.tech@gmail.com')
+                JFROG_TOKEN = credentials('jfrog_id')
+            }
+            steps {
+                sh '''
+                    echo "Building Docker image..."
+                    docker build \
+                      --build-arg user=parella \
+                      --build-arg JFROG_USER=$JFROG_USER \
+                      --build-arg JFROG_TOKEN=$JFROG_TOKEN \
+                      -t java:1.1 .
+                '''
             }
         }
     }   

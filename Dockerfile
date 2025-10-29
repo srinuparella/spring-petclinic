@@ -1,6 +1,6 @@
 FROM  maven:3.9.11-eclipse-temurin-17 AS build
 WORKDIR /project
-ADD https://trialo0wbd2.jfrog.io/artifactory/jfrog_java-libs-release/spring-petclinic-3.5.0-SNAPSHOT.jar  /project
+ADD https://trialo0wbd2.jfrog.io/artifactory/jfrog_java-libs-release/  /project
 RUN mvn package
 
 
